@@ -172,7 +172,7 @@ final_verify_begin:
     test al, al
     jz wrong
     inc bx
-    jmp final_verify_end
+    jmp final_verify_begin
 final_verify_end:
 
 correct:
@@ -242,9 +242,9 @@ rc4_init_loop_2_end:
 
 # si: sbox
 _rc4_load_sbox:
-    xor bx, bx
+    xor bl, bl
 rc4_load_sbox_loop_begin:
-    cmp bx, 0x50
+    cmp bl, 128
     je rc4_load_sbox_loop_end
     mov al, 128
     add al, bl
@@ -253,7 +253,7 @@ rc4_load_sbox_loop_begin:
     inc si
     mov ds:[si], ah
     inc si
-    add bx, 2
+    inc bl
     jmp rc4_load_sbox_loop_begin
 rc4_load_sbox_loop_end:
     ret
@@ -284,10 +284,10 @@ rc4_crypt_begin:
     movzx bx, al
     add bx, si
     mov ds:[bx], dh
-    
+
     add dl, dh
     movzx bx, dl
-    add cx, si
+    add bx, si
     mov dl, ds:[bx]
     mov bx, di
     mov dh, bl
@@ -375,5 +375,5 @@ for i in range(0, len(code), 16):
 result = RESULT_PREFIX + result + '};'
 print(result)
 
-with open('hv_code.h', 'wb') as f:
-    f.write(code)
+with open('hv_code.h', 'w') as f:
+    f.write(result + '\n')

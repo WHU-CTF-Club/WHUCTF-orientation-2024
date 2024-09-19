@@ -335,7 +335,7 @@ void EzHvHandleX64IoPortAccess(WHV_PARTITION_HANDLE hPartition, const WHV_RUN_VP
             static auto iter = generator.begin();
 
             if (iter == generator.end())
-                EzHvSetRax(hPartition, false); // false
+                EzHvSetRax(hPartition, false);
             else
             {
                 EzHvSetRax(hPartition, static_cast<UINT8>(EzHvGetRax(hPartition)) == *iter);
