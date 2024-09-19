@@ -1,0 +1,1 @@
+gcc -s rsa_dec.c ezrsa.c -o ezrsa
