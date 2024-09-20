@@ -81,8 +81,24 @@ const uint8_t answer[] = {
     0x89, 0x89, 0xA7, 0x29,
 };
 
+#ifdef DECODE_TEST
+void decode_test()
+{
+  uint8_t buffer[256];
+  uint8_t out[256];
+  memcpy(buffer, answer, 256);
+  RSA2048_Encrypt(&private_key, buffer, 256, out);
+  memset(buffer, 256, 0);
+  memcpy(buffer, out + 1, 255);
+  printf("%s\n", buffer);
+}
+#endif// DECODE_TEST
+
 // WHUCTF{545B76DB-DD8E-8740-74C9-F06DA947188D}
 int main() {
+#ifdef DECODE_TEST
+  decode_test();
+#endif // DECODE_TEST
   printf("Please input: ");
   char buffer[0x100] = {0};
   scanf("%255s", buffer);
