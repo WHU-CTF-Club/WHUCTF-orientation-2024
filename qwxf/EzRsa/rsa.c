@@ -153,13 +153,11 @@ int RSA2048_Encrypt(RSAPrivateKey key, const uint8_t* pIn, const int len,
 
   for (i = 0; i < len; ++i) buf[i] = pIn[i];
 
-  if (key->d == NULL)
-  {
+  if (key->d == NULL) {
     puts("Invalid d");
     return 0;
   }
-  if (key->d_bit_len == 0)
-  {
+  if (key->d_bit_len == 0) {
     puts("Invalid d_bit_len");
     return 0;
   }
@@ -168,7 +166,7 @@ int RSA2048_Encrypt(RSAPrivateKey key, const uint8_t* pIn, const int len,
   modpowEnc(key, buf);
 #else
   puts("Not implemented yet");
-#endif // DECODE_TEST
+#endif  // DECODE_TEST
 
   for (i = 0; i < len; ++i) pOut[i] = buf[i];
   return 1;

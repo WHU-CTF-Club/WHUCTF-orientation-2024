@@ -82,8 +82,7 @@ const uint8_t answer[] = {
 };
 
 #ifdef DECODE_TEST
-void decode_test()
-{
+void decode_test() {
   uint8_t buffer[256];
   uint8_t out[256];
   memcpy(buffer, answer, 256);
@@ -92,30 +91,33 @@ void decode_test()
   memcpy(buffer, out + 1, 255);
   printf("%s\n", buffer);
 }
-#endif// DECODE_TEST
+#endif  // DECODE_TEST
 
 // WHUCTF{545B76DB-DD8E-8740-74C9-F06DA947188D}
 int main() {
 #ifdef DECODE_TEST
   decode_test();
-#endif // DECODE_TEST
+  return 0;
+#endif  // DECODE_TEST
   printf("Please input: ");
+  fflush(stdout);
   char buffer[0x100] = {0};
   scanf("%255s", buffer);
   if (strlen(buffer) != 44) {
     printf("Wrong input length!\n");
+    fflush(stdout);
     return 1;
   }
 
-  if (memcmp(buffer, "WHUCTF{", 7))
-  {
+  if (memcmp(buffer, "WHUCTF{", 7)) {
     printf("Wrong string begin!\n");
+    fflush(stdout);
     return 1;
   }
 
-  if (buffer[43] != '}')
-  {
+  if (buffer[43] != '}') {
     printf("Wrong string end!\n");
+    fflush(stdout);
     return 1;
   }
 
