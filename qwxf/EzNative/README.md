@@ -17,4 +17,4 @@
 `WHUCTF{e25ff8d8-e7be-42b7-9aec-7fe7eb5c93fa}`
 
 ## Info
-2048位RSA，结构体中同时保留了私钥的内容和解密函数，可以直接patch调用解密得到答案。
+使用`RtlCreateProcessParameters`+`RtlCreateUserProcess`+`ResumeThread`即可，在`ResumeThread`之前把调试器挂上去就能看到输出了。
