@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Document Version="2">
+    <Protection InputFileName="EzNative.exe" Options="327680" VMCodeSectionName=".???" VMComplexity="20">
+        <Messages />
+        <Folders />
+        <Procedures>
+            <Procedure MapAddress="process_message" Options="0" />
+            <Procedure MapAddress="generate_sub_keys" Options="0" CompilationType="1" />
+            <Procedure MapAddress="NtProcessStartup(void)" Options="0" CompilationType="2" />
+        </Procedures>
+        <Objects />
+    </Protection>
+    <DLLBox>
+        <Folders />
+    </DLLBox>
+    <Script />
+    <LicenseManager />
+</Document>
