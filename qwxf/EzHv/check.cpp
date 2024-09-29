@@ -1,10 +1,8 @@
 #include "check.h"
 #include "handle.h"
-#include "win32util.h"
 #include "whpx.h"
 
 #include <WinHvPlatform.h>
-#include <VersionHelpers.h>
 
 #include <intrin.h>
 
@@ -38,62 +36,63 @@ bool IsVtEnabled()
 
 bool IsHyperVEnabled()
 {
-    const auto version = GetWindowsVersion();
-    if (!version.has_value()) // Failed to fetch windows version, this should not happen in any case!
-        return false;
-
-    if (version->dwMajorVersion > 10 || version->dwMajorVersion == 10 && version->dwBuildNumber >= 17134)
-    {
+    do {
         // Since Windows 10 1803 (build 17134), Windows Hypervisor Platform API is part of the system.
         // https://learn.microsoft.com/en-us/virtualization/api/hypervisor-platform/hypervisor-platform
-        if (!whpx_dispatcher.WHvGetCapability)
-            return false;
-        
+        // We will try to use the WHPX API if possible
+        if (!whpx_dispatcher.WHvGetCapability) {
+            break;
+        }
+
         BOOL bHyperVPresent = false;
         UINT32 uBytesReturned = 0;
-        HRESULT hr = whpx_dispatcher.WHvGetCapability(WHvCapabilityCodeHypervisorPresent, &bHyperVPresent, sizeof(bHyperVPresent), &uBytesReturned);
-        
-        return SUCCEEDED(hr) && uBytesReturned == sizeof(bHyperVPresent) && bHyperVPresent;
-    }
+        HRESULT hr = whpx_dispatcher.WHvGetCapability(WHvCapabilityCodeHypervisorPresent, &bHyperVPresent, sizeof(bHyperVPresent),
+            &uBytesReturned);
+        bool result = SUCCEEDED(hr) && uBytesReturned == sizeof(bHyperVPresent) && bHyperVPresent;
+        return result;
+    } while (false);
 
     // For older Windows version, we try to detect the Hyper-V status by gathering information from cpuid
     // https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/feature-discovery
+
+    // The following checks is mostly reverse-engineered from WinHvPlatform.dll WHvGetCapability
     int cpuid[4];
 
-    // CPUID.01h.ECX:31: if set, virtualization present 
+    // CPUID.01h.ECX:31: if set, virtualization present
     __cpuid(cpuid, 1);
-    if (!(cpuid[2] & (1 << 31)))
+    if (!(cpuid[2] & (1 << 31))) {
         return false;
-
-    // On hypervisors conforming to the Microsoft hypervisor CPUID interface,
-    // the 0x40000000 and 0x40000001 leaf registers will have the following values.
-    __cpuid(cpuid, 0x40000000);
-    if (cpuid[0] < 0x40000005) // The maximum input value for hypervisor CPUID information. 
-        return false;          // On Microsoft hypervisors, this will be at least 0x40000005.
-    if (cpuid[1] != 0x7263694D || cpuid[2] != 0x666F736F || cpuid[3] != 0x76482074) // "Microsoft Hv"
-        return false;
-
-    __cpuid(cpuid, 0x40000001);
-    if (cpuid[1] != 0x31237648) // EAX contains the hypervisor interface identification signature. "Hv#1"
-        return false;           // This determines the semantics of the leaves from 0x40000002 through 0x400000FF.
-
-    // Hypervisor System Identity
-    // EAX: Build Number
-    // EBX: Bits 31-16: Major Version, Bits 15-0: Minor Version
-    __cpuid(cpuid, 0x40000002);
-    // On most Hypervisors, such as KVM, VirtualBox and VMWare, these values should be 0
-    if (cpuid[0] == cpuid[1] == cpuid[2] == cpuid[3] == 0)
-        return false;
-    else // On Hyper-V enabled Windows, these values should be the same as Windows's version
-    {
-        DWORD dwBuildNumber = cpuid[0];
-        WORD wMajorVersion = cpuid[1] >> 16;
-        WORD wMinorVersion = cpuid[1] & 0xffff;
-
-        if (dwBuildNumber != version->dwBuildNumber || wMajorVersion != version->dwMajorVersion || wMinorVersion != version->dwMinorVersion)
-            return false;
     }
 
-    // All checks passed, Hyper-V is enabled on this machine!
+    // Hypervisor CPUID Leaf Range
+    __cpuid(cpuid, 0x40000000);
+    const int hv_leaf_max = cpuid[0];
+    if (hv_leaf_max < 0x40000005) {  // On Microsoft hypervisors, this will be at least 0x40000005.
+        return false;
+    }
+    if (cpuid[1] != 0x7263694D || cpuid[2] != 0x666F736F || cpuid[3] != 0x76482074) {  // "Microsoft Hv"
+        return false;
+    }
+
+    // Hypervisor Vendor-Neutral Interface Identification
+    __cpuid(cpuid, 0x40000001);
+    if (cpuid[0] != 0x31237648) {  // EAX contains the hypervisor interface identification signature. "Hv#1"
+        return false;                // This determines the semantics of the leaves from 0x40000002 through 0x400000FF.
+    }
+
+    // Hypervisor Feature Identification - EBX Bit 11: HV_PARTITION_PRIVILEGE_MASK::CpuManagement
+    __cpuid(cpuid, 0x40000003);
+    if (!(cpuid[1] & (1 << 11))) {
+        return false;
+    }
+
+    // Implementation Hardware Features - EAX Bit 17: Support for Unrestricted Guest is present.
+    if (hv_leaf_max >= 0x40000006) {
+        __cpuid(cpuid, 0x40000006);
+        if (!(cpuid[0] & (1 << 17))) {
+            return false;
+        }
+    }
+
     return true;
 }
