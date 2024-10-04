@@ -5,6 +5,7 @@
 
 char *notes[0x10];
 size_t len[0x10];
+
 void init() {
   setbuf(stdin, 0);
   setbuf(stdout, 0);
@@ -59,6 +60,7 @@ int edit_note(int idx) {
   }
   return 0;
 }
+
 int view_note(int idx) {
   if (notes[idx] != NULL) {
     write(1, notes[idx], len[idx]);
