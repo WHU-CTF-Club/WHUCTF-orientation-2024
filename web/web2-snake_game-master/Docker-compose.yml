@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./src
+    ports:
+      - "8080:80" # 映射前端容器的端口到主机
+    networks:
+      - my-network
+
+  backend:
+    build:
+      context: ./server
+    ports:
+      - "3000:3000" # 映射后端容器的端口到主机
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

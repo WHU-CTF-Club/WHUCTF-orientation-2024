@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  app01:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      - FLAG1=WHUCTF{just_a_fla
+      - FLAG2=g_for_sign}
+      - PORT=80
+      - SECRET_COOKIE=xxxxxxxxxx
