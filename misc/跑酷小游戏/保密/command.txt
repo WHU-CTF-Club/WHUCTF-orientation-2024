@@ -1,0 +1,48 @@
+/tellraw @p[tag=good] [{"text":"【系统】","color":"light_purple","bold":True},{"text":"很好的挑战，使我头脑放松！","color":"aqua"},{"text":"flag已经在你脑海里啦~","color":"gold"}]
+
+# 给flag的三种方式
+/give @p[tag=good] minecraft:nether_star{Enchantments:[{id:"minecraft:fortune",lvl:10},{id:"minecraft:binding_course",lvl:1}],display:{Name:'{"text":"FLAG","color":"light_purple","bold":True}',Lore:['{"text":"WHUCTF{MISC_contains_Minecraft_parkour_And_have_@_good_rest!!}","color":"gold","Italic":"false"}']}} 1 
+
+# 采用了这一种
+/item replace entity @p[tag=good] armor.head with minecraft:nether_star{Unbreakable:1b,Enchantments:[{id:"minecraft:fortune",lvl:10},{id:"minecraft:binding_curse",lvl:1}],display:{Name:'{"text":"FLAG","color":"light_purple","bold":True}',Lore:['{"text":"WHUCTF{MISC_contains_Minecraft_parkour_And_have_@_good_rest!!}","color":"gold","Italic":"false"}']}}
+
+/tellraw @p[tag=good,scores={WHUCTF=1}] [{"text":"给你flag:","color":"light_purple","bold":True},{"text":"WHUCTF{MISC_contains_Minecraft_parkour_And_have_@_good_rest!!}","color":"gold"}]
+
+# 给其他题目的提示
+/tellraw @p[tag=good,scores={WHUCTF=2}] [{"text":"【给你hint】","color":"light_purple","bold":"true"},{"text":"雪花牛肉：空白字符","color":"gold"}]
+/tellraw @p[tag=good,scores={WHUCTF=3}] [{"text":"【给你hint】","color":"light_purple","bold":"true"},{"text":"武大校历：IHDR","color":"gold"}]
+/tellraw @p[tag=good,scores={WHUCTF=4}] [{"text":"【给你hint】","color":"light_purple","bold":"true"},{"text":"zip杂交：解压docx","color":"gold"}]
+/tellraw @p[tag=good,scores={WHUCTF=5}] [{"text":"【给你hint】","color":"light_purple","bold":"true"},{"text":"天命人：HanXinCode","color":"gold"}]
+/tellraw @p[tag=good,scores={WHUCTF=6}] [{"text":"【给你hint】","color":"light_purple","bold":"true"},{"text":"Git-Gif：历史提交","color":"gold"}]
+
+# 启动反作弊命令
+/tag @e[type=minecraft:armor_stand,limit=1,tag=core] add start
+# 关闭反作弊命令
+/tag @e[type=minecraft:armor_stand,limit=1,tag=core] remove start
+# 紧急修复
+/execute as @e[type=minecraft:armor_stand,limit=1,tag=core] run fill ~-5 ~ ~-5 ~5 ~-5 ~5 air replace minecraft:repeater[powered=true]
+kill  @e[type=interaction,nbt={NoAI:1b}]
+
+# 检测玩家的异常
+execute as @e[type=minecraft:armor_stand,tag=start,limit=1,tag=core] run tag @p[gamemode=!adventure] add fix 
+execute as @e[type=minecraft:armor_stand,tag=start,limit=1,tag=core] run tag @p[distance=..5] add fix 
+execute as @e[type=minecraft:armor_stand,tag=start,limit=1,tag=core] run tag @p[nbt={SelectedItem:{}}] add fix
+execute as @e[type=interaction,nbt={NoAI:1b}] if entity @e[type=minecraft:armor_stand,tag=start,limit=1,tag=core] unless entity @e[type=player,distance=..5] run tag @p add fix 
+
+# 爬塔结算
+# 沙漠
+execute if block 10 -8 19 air run tag @p add good
+# 地狱
+execute if block 12 -8 18 air run tag @p add good
+# 蘑菇岛
+execute if block 13 -8 19 air run tag @p add good
+# 繁茂洞穴
+execute if block 11 -8 19 air run tag @p add good
+# 丛林
+execute if block 10 -8 18 air run tag @p add good
+# 针叶林
+execute if block 11 -8 18 air run tag @p add good
+# 樱花
+execute if block 12 -8 19 air run tag @p add good
+# 红沙
+execute if block 13 -8 18 air run tag @p add good
