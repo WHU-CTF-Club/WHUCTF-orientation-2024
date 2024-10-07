@@ -1,6 +1,6 @@
 from Crypto.Util.number import *
 
-flag = b"WHUCTF{LCG_1s_e@sy_t0_s0lv3}"
+flag = b"??????????????"
 length = len(flag)
 a = bytes_to_long(flag[: length // 2])
 b = bytes_to_long(flag[length // 2 :])
