@@ -1,5 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include <string.h>
+#include<unistd.h>
 
 char *commandlist[6]={"pwd","whoami","ls","uname","showKey","openthedoor"};
 void handle_input(char *input)
@@ -114,11 +116,14 @@ void vuln(char *input,char *buf)
    
   }
 }
-void init() {
-  setbuf(stdin, 0);
-  setbuf(stdout, 0);
-  setbuf(stderr, 0);
+
+void init()
+{
+    setvbuf(stdout, 0LL, 2, 0LL);
+    setvbuf(stdin, 0LL, 2, 0LL);
+    setvbuf(stderr, 0LL, 2, 0LL);
 }
+
 
 int main()
 {

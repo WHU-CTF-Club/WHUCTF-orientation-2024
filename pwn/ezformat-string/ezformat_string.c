@@ -1,17 +1,22 @@
 #include<stdio.h>
+#include<stdlib.h>
+#include <string.h>
 #include<unistd.h>
 long long int magic=0;
-void init() {
-  setbuf(stdin, 0);
-  setbuf(stdout, 0);
-  setbuf(stderr, 0);
+void init()
+{
+    setvbuf(stdout, 0LL, 2, 0LL);
+    setvbuf(stdin, 0LL, 2, 0LL);
+    setvbuf(stderr, 0LL, 2, 0LL);
 }
-int main()
+
+int main(int argc, char** argv)
 {   
-    init();
     char buf[0x200];
+    init();
     printf("Do you konw format-string?\n");
     printf("Just try to getshell\n");
+    memset(buf,0,0x200);
     read(0,buf,0x200);
     printf(buf);
     if(magic==0x32107654ba98fedc){
