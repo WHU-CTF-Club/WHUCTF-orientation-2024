@@ -114,9 +114,15 @@ void vuln(char *input,char *buf)
    
   }
 }
+void init() {
+  setbuf(stdin, 0);
+  setbuf(stdout, 0);
+  setbuf(stderr, 0);
+}
 
 int main()
 {
+    init();
     char input[256];
     char buf[1024];
     printf("%s", "Welcome to the debug console! Use \"help\" to see supported commands. \n");
